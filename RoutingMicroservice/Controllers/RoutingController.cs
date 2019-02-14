@@ -1,6 +1,7 @@
 ﻿using RoutingMicroservice.BuisnessLayer;
 using RoutingMicroservice.Constants;
 using RoutingMicroservice.Utility;
+using RoutingMicroservice.WebApiOperations;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -31,15 +32,16 @@ namespace RoutingMicroservice.Controllers
 		// PUT api/values/5
 		public HttpResponseMessage Put(HttpRequestMessage request)
 		{
-			var content = request.Content;
-			string stringCotent = content.ReadAsStringAsync().Result;
+			HttpContent httpcontent = request.Content;
+			string stringCotent = httpcontent.ReadAsStringAsync().Result;
 			//var newContent = stringCotent.Replace(ConstantValues.xmlNameSpace, string.Empty);
 			XmlDocument inputDoc = XMLOperations.GenerateXML(stringCotent);
 			string fisName = XMLOperations.GetValueByXpath(inputDoc, ConstantValues.xpathVendorIdent);
 			string fiURL = FIDetails.GetFIURIByName(fisName);
-			//string rst = WebApiOperation.ExecutivePutAPI(fiURL, content);
+			string rst = WebApiOperation.ExecutivePutAPI(fiURL, httpcontent);
+			//WebApiOperation.ExecutivePutAPI2(fiURL, stringCotent);
 
-			return new HttpResponseMessage() { Content = new StringContent(fiURL, Encoding.UTF8,"application/xml") };
+			return new HttpResponseMessage() { Content = new StringContent(rst, Encoding.UTF8,"application/xml") };
 		}
 
 		// DELETE api/values/5
